@@ -1,12 +1,15 @@
-import { EventEmitter, Injectable, Output } from "@angular/core";
+import { Injectable} from "@angular/core";
+import { Subject } from "rxjs";
 import { Ingredient } from "../shared/ingredient.model";
 import { ShoppingListService } from "../shopping-list/shopping-list.service";
 import { Recipe } from "./recipe.model";
 
 @Injectable()
 export class RecipesService {
-    
+        
     constructor(private slService: ShoppingListService) {}
+
+    recipeChanges = new Subject<Recipe[]>();
 
     private recipes: Recipe[] = [
         new Recipe(
@@ -16,7 +19,6 @@ export class RecipesService {
             [
                 new Ingredient("Carne", 1),
                 new Ingredient("Pan", 2)
-
             ]
         ),
         new Recipe(
@@ -27,9 +29,7 @@ export class RecipesService {
                 new Ingredient("Fideos", 1)
             ]
         )
-    ];
-    
-    @Output() selectedRecipe = new EventEmitter<Recipe>(); 
+    ];   
 
     //el slice es para devolver una copia y no se pueda modificar el original
     getRecipes(): Recipe[] {
@@ -40,8 +40,23 @@ export class RecipesService {
         return this.recipes[index];
     }
 
-    addIngredientToSL(ingredients: Ingredient[]) {
+    addIngredientToSL(ingredients: Ingredient[]): void {
         this.slService.addIngredients(ingredients)
     }
-    
+
+    addRecipe(recipe: Recipe): void {
+        this.recipes.push(recipe);
+        this.recipeChanges.next(this.recipes.slice())
+    }
+        
+    updateRecipe(index: number, newRecipe: Recipe): void {
+        this.recipes[index] = newRecipe
+        this.recipeChanges.next(this.recipes.slice())
+    }
+
+    deleteRecipe(index: number): void {
+        this.recipes.splice(index, 1);
+        this.recipeChanges.next(this.recipes.slice())
+    }
+
 }
