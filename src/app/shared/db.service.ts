@@ -1,6 +1,7 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { map } from "rxjs/operators";
+import { exhaustMap, map, take, tap } from "rxjs/operators";
+import { AuthService } from "../auth/auth.service";
 import { Recipe } from "../recipes/recipe.model";
 import { RecipesService } from "../recipes/recipes.service";
 
@@ -10,6 +11,7 @@ export class DbService {
     constructor(
         private http: HttpClient,
         private recipeService: RecipesService,
+        private authService: AuthService,
     ) { }
 
     storeRecipes(): void {
@@ -24,23 +26,23 @@ export class DbService {
         })
     }
 
-    getRecipes(): void {
-        this.http.get<Recipe[]>(
+    getRecipes() {
+        return this.http.get<Recipe[]>(
             "https://angular-recetas-app-default-rtdb.firebaseio.com/recipes.json"
         )
-        .pipe(map(recipes => {
-            return recipes.map(recipe => {
-                return { 
-                    ...recipe, 
-                    ingredients: recipe.ingredients ? recipe.ingredients : []
-                }
+        .pipe(                            
+            map(recipes => {
+                return recipes.map(recipe => {
+                    return { 
+                        ...recipe, 
+                        ingredients: recipe.ingredients ? recipe.ingredients : []
+                    }
+                })
+            }),
+            tap(recipes => {
+                this.recipeService.setRecipes(recipes);
             })
-        }))
-        .subscribe (
-            recipes => {
-                this.recipeService.setRecipes(recipes)
-            }
-        )
+        )        
     }
 
 }

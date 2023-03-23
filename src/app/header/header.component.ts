@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 import { DbService } from '../shared/db.service';
 
 @Component({
@@ -6,16 +8,39 @@ import { DbService } from '../shared/db.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit, OnDestroy{
 
-  constructor(private dbService: DbService) {}
+  constructor(
+    private dbService: DbService,
+    private authService: AuthService,
+  ) {}
+  
+  userSubscription: Subscription;
+  isAuthenticated = false;
+
+  ngOnInit(): void {
+    this.userSubscription = this.authService.user
+      .subscribe(user => {
+        this.isAuthenticated = !!user
+        //lo mismo que:
+        //this.isAuthenticated = !user ? false : true
+      })
+  }
+
+  ngOnDestroy(): void {
+    this.userSubscription.unsubscribe();
+  }
  
-  onSaveData() {
+  onSaveData(): void {
    this.dbService.storeRecipes();
   }
 
-  onLoadData() {
-    this.dbService.getRecipes();
+  onLoadData(): void {
+    this.dbService.getRecipes().subscribe();
+  }
+
+  onLogOut(): void {
+    this.authService.logOut();
   }
 
 }
