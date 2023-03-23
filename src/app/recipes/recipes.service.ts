@@ -10,8 +10,8 @@ export class RecipesService {
     constructor(private slService: ShoppingListService) {}
 
     recipeChanges = new Subject<Recipe[]>();
-
-    private recipes: Recipe[] = [
+    private recipes: Recipe[] = [];
+   /*  private recipes: Recipe[] = [
         new Recipe(
             "Hamburguesa",
             "Una hamburguesa de carne",
@@ -29,7 +29,7 @@ export class RecipesService {
                 new Ingredient("Fideos", 1)
             ]
         )
-    ];   
+    ];  */  
 
     //el slice es para devolver una copia y no se pueda modificar el original
     getRecipes(): Recipe[] {
@@ -56,6 +56,11 @@ export class RecipesService {
 
     deleteRecipe(index: number): void {
         this.recipes.splice(index, 1);
+        this.recipeChanges.next(this.recipes.slice())
+    }
+
+    setRecipes(recipes: Recipe[]): void {
+        this.recipes = recipes;
         this.recipeChanges.next(this.recipes.slice())
     }
 

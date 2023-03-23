@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DbService } from '../shared/db.service';
 
 @Component({
   selector: 'app-header',
@@ -6,5 +7,15 @@ import { Component } from '@angular/core';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
+
+  constructor(private dbService: DbService) {}
+ 
+  onSaveData() {
+   this.dbService.storeRecipes();
+  }
+
+  onLoadData() {
+    this.dbService.getRecipes();
+  }
 
 }
