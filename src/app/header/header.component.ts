@@ -4,6 +4,7 @@ import { map, Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { DbService } from '../shared/db.service';
 import * as fromApp from '../store/app.reducer';
+import * as AuthActions from '../auth/store/auth.actions';
 
 @Component({
   selector: 'app-header',
@@ -44,7 +45,7 @@ export class HeaderComponent implements OnInit, OnDestroy{
   }
 
   onLogOut(): void {
-    this.authService.logOut();
+    this.store.dispatch(AuthActions.logout());
   }
 
 }

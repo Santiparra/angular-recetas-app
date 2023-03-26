@@ -27,7 +27,7 @@ export class RecipesService {
     }
 
     addIngredientToSL(ingredients: Ingredient[]): void {
-        this.store.dispatch(new ShoppingListActions.AddIngredients(ingredients))
+        this.store.dispatch(ShoppingListActions.addIngredients({ingredients}))
     }
 
     addRecipe(recipe: Recipe): void {
