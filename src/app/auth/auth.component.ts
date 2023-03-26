@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
@@ -10,7 +10,7 @@ import * as AuthActions from './store/auth.actions';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent {
+export class AuthComponent implements OnInit, OnDestroy{
 
   constructor(private store: Store<fromApp.AppState>) { }
 
@@ -24,9 +24,6 @@ export class AuthComponent {
     this.storeSub = this.store.select('auth').subscribe(authState => {
       this.isLoading = authState.loading;
       this.error = authState.authError;
-      if (this.error) {
-        //this.showErrorAlert(this.error);
-      }
     });
   }
 
@@ -60,25 +57,8 @@ export class AuthComponent {
     form.reset();
   }
 
-  onHandleError() {
-    this.error = null
+  onHandleError(): void {
+    this.store.dispatch(AuthActions.clearError())
   }
-
-  /* private showErrorAlert(message: string) {
-    // const alertCmp = new AlertComponent();
-    const alertCmpFactory = this.componentFactoryResolver.resolveComponentFactory(
-      AlertComponent
-    );
-    const hostViewContainerRef = this.alertHost.viewContainerRef;
-    hostViewContainerRef.clear();
-
-    const componentRef = hostViewContainerRef.createComponent(alertCmpFactory);
-
-    componentRef.instance.message = message;
-    this.closeSub = componentRef.instance.close.subscribe(() => {
-      this.closeSub.unsubscribe();
-      hostViewContainerRef.clear();
-    });
-  } */
 
 }
